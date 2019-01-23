@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Homepage | Bitcoin Price App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+    <div  style="margin: 0 auto; width: 600px;" >
+    <form name="bitcoinPrice" id=login_form>
+        <p><b style="padding-left: 85px;">Find the Historic Price of the Bitcoin here !</b></p>
+    Start Date: <input type="text" name="startDate" placeholder="DD-MM-YYYY" />
+    End Date: <input type="text" name="endDate" placeholder="DD-MM-YYYY" />
+    <p/>
+    <input type="submit" value="Get Price" style="font-size: 16px;
+    width: 100px;"/>
+    </form>
+    
+    
+    <p></p>
+    
+    <div style="display:none;" id="resultTable" >
+        <b style="padding-left: 160px;">Bitcoin Price Data Table</b>
+        <br/>
+    <table style="width: 400px; padding-left:140px;">
+        
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody id="tBody"></tbody>
+</table>
+        </div>
+    </div>
+    
+    <script>
+    $( document ).ready(function() {
+        
+       
+    $('#login_form').on('submit', function(e) { 
+        e.preventDefault();  
+        
+        
+        var jsonData = $('#login_form').serializeArray().reduce(function(obj, item) {
+    obj[item.name] = item.value;
+    return obj;
+        }, {});
+        
+   
+       $.post( "getPriceForDate", jsonData)
+            .done(function( response ) {
+           
+           var trHTML = '';
+        $('#tBody').html("");
+           var maxVal = response.maxValue;
+           var priceMap = response.priceMap;
+                        $.each(priceMap, function (k,v) { 
+                            
+                            var value
+                            if (v===maxVal)
+                                {
+                                    value = '<b>' + v + '&nbsp;&nbsp;(Highest)' + '</b>';
+                                }
+                            else value = v;
+                                trHTML +=
+                                    '<tr><td style="text-align: center;">'
+                                    + k
+                                    + '</td><td style="text-align: center;">'
+                                    + value
+                                    + '</td></tr>';
+                            
+                        });
+                        console.log(trHTML);
+                        $('#tBody').append(trHTML);
+                        $('#resultTable').show();
+               
+        });
+        
+
+        
+    });
+        
+    });
+ 
+    
+    </script>
+    
+</body>
+</html>
